@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB3-KRYPTO-MINTER</title>
+    
+</head>
+<body>
+    
+</body>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script>
+async function loadMetaMask(){
+    var web3 = null;
+    if (window.ethereum != null) {
+        web3 = new Web3(window.ethereum)
+       try {
+            // Request account access if needed
+            const accounts = await ethereum.send('eth_requestAccounts');
+            // Accounts now exposed, use them
+            ethereum.send('eth_sendTransaction', { from: accounts[0], /* ... */ })
+        } catch (error) {
+            // User denied account access
+        }
+    }
+}
+// loadMetaMask();
+
+    // if(!web3){
+        // var Web3 = require("web3")
+        const web3 = new Web3("https://cloudflare-eth.com")
+        web3.eth.getBlockNumber(function (error, result) {
+            console.log(result)
+        })
+    // }
+
+    web3.currentProvider
+
+
+
+    let EXAMPLE_opensea_metadata =    {
+  "description": "Friendly OpenSea Creature that enjoys long swims in the ocean.", 
+  "external_url": "https://openseacreatures.io/3 website", 
+  "image": "https://storage.googleapis.com/opensea-prod.appspot.com/puffs/3.png", 
+  "name": "Dave Starbelly",
+  "youtube_url":"",
+  "attributes": EXAMPLE_attributes.attributes, 
+}
+
+let EXAMPLE_OpenSeas_attributes = {
+"attributes": [
+    {
+      "trait_type": "Base", 
+      "value": "Starfish"
+    },  
+    {
+      "display_type": "boost_number", 
+      "trait_type": "Aqua Power", 
+      "value": 40
+    }, 
+    {
+      "display_type": "boost_percentage", 
+      "trait_type": "Stamina Increase", 
+      "value": 10
+    }, 
+    {
+      "display_type": "number", 
+      "trait_type": "Generation", 
+      "value": 2
+    }
+  ]
+}
+
+//1155 metadata
+// {
+// 	"name": "Asset Name",
+// 	"description": "Lorem ipsum...",
+// 	"image": "https:\/\/s3.amazonaws.com\/your-bucket\/images\/{id}.png",
+// 	"properties": {
+// 		"simple_property": "example value",
+// 		"rich_property": {
+// 			"name": "Name",
+// 			"value": "123",
+// 			"display_value": "123 Example Value",
+// 			"class": "emphasis",
+// 			"css": {
+// 				"color": "#ffffff",
+// 				"font-weight": "bold",
+// 				"text-decoration": "underline"
+// 			}
+// 		},
+// 		"array_property": {
+// 			"name": "Name",
+// 			"value": [1,2,3,4],
+// 			"class": "emphasis"
+// 		}
+// 	}
+// }
+
+
+    async function getBlockNumber() {
+        const latestBlockNumber = await web3.eth.getBlockNumber()
+        console.log(latestBlockNumber)
+        return latestBlockNumber
+        //TODO how to GET BY CREATOR? Seems missing...
+    }
+    getBlockNumber()
+
+
+    // const Web3 = require("web3")
+    //Set Provider
+    // const web3 = new Web3("http://localhost:8545"); //GANACHE local running cmd: ganache-cli 
+    // const web3 = new Web3("https://cloudflare-eth.com"); //hosted node, free.
+</script>
+</html>

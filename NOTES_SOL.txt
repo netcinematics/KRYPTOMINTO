@@ -1,0 +1,1249 @@
+NOTES on SOLIDITY.
+
+RESOURCES / GOALS :
+
+- 144 Videos by Smart Contract Developer
+https://www.youtube.com/channel/UCJWh7F3AFyQ_x01VKzr9eyA/playlists
+
+SMART-CONTRACT: write, compile, deploy, run in browser.
+
+Deploy to BLOCKCHAIN-SIMULATOR - TESTNET.
+
+Can store data on blockchain but too expensive.
+
+STATE VARIABLES: 
+storage - (app state, harddrive, permanent - stored on blockchain)
+memory - (only in function, local, not stored on blockchain) 
+calldata - function arguments
+
+FUNCTIONS:
+Two types, functions that create TRANSACTIONS (on blockchain), or not.
+
+TRANSACTION - change state var, or send eth, change balances.
+
+Free to call functions that do not WRITE to BLOCKCHAIN.
+
+public - to get function to CONTRACT VIEW.
+
+public returns - define return type and storage
+
+view or pure - does not modify blockchain state
+
+view - does not read
+pure - does not read or write
+
+public view returns - reads from blockchain, does not write.
+
+Solidity automatically compiles set/get - for public state variables at top.
+
+IPFS: file storage. Anyone can access with a HASH. cID
+
+CONTRACT: cheap storage, public data.
+
+IPFS aims to pass HTTP - better web.
+
+OWNERSHIP of DATA, or RIGHTS to DATA.
+
+-ether, wei, gwei.
+
+ETHER: Block REWARDS, Transaction FEES, TRANSFERS.
+
+1 ETHER = 10^18 WEI. Many of these (babbage and lovelace, szabo, finney and ether)
+
+ETHER = 1,000,000,000,000,000,000 
+WEI = 1
+
+Gwei = "Giga WEI" = 1 billion WEI. Used to set GAS PRICE. (half an ether? 10^9)
+
+ether = currency of Ethereeum.
+
+-GAS
+
+TXFee = gas used by gas price
+
+gas limit how much you will to use. set by author
+
+gas is a unit of computation to limit infinite loops.
+
+you LOSE GAS spent, if it reaches GAS LIMIT.
+
+Unspent gas is refunded
+
+Gas Price = Ether / gas price
+
+Block Gas Limit set by network
+
+
+-FUNCTIONS
+
+Limits set on PUBLIC FUNCTION inputs and returns
+
+i/o restriction of data types. Multiple outputs.
+
+INVALID INPUTS: Map Object {} and [][] multidimensional array without FIXED SIZE
+
+DO NOT TAKE public PARAMETERS OF ARBITRARY SIZE - because GAS.
+
+Bigger array more gas. [] no gas [1,2,3,4,5] - more gas.
+
+uint MAX_ARRAY_LENGTH = 10;
+
+Smart Contracts should be: simple, reliable, predictable
+
+INVALID OUTPUTS: {} and [][].
+
+BOUND GAS CONSUMPTION - is SAFE. Unbounded is NOT SAFE.
+
+SYNTAX for MULTIPLE RETURN is
+
+... returns (uint a, bool b) {
+
+    return ( 1, true)
+//OMIT RETURN 
+     a=1;
+     b=true;
+//multi function call
+    return (f(),g())
+}
+
+RETURN SYNTAX
+
+(uint a, bool b) = multiFn()
+
+- VIEW and pure
+
+VISIBILITIES: public, private, internal, external.
+BEHAVIOR: view, pure, payable
+
+VIEW - read only, no modification: 
+
+GAS COST on WRITE STATE: vars, emits, create contract, selfdistruct, ether calls, 
+ calling any function not view or pure (!)
+ low level calls and "inline assembly - opcodes"
+
+ selfdistruct - removes contract from blockchain
+
+PURE - 
+
+will not READ STATE either
+
+Read from state variable, address(this).balance
+
+accessing msg, block, tx
+
+call any non pure fn
+assembly opcodes
+
+
+FUNCTION MODIFIERS - reusable code - before or after
+1 restricting WRITE
+2 checking PARAMETERS
+3 re entrancy check
+
+onlyOwner and validAddress
+
+modifier = change function keyword to modifier remove PUBLIC
+
+_; // tells solidity, in modifier, to "execute rest of code"
+
+Function Modifiers make code more readible
+
+REENTRANCY - 
+
+locked = true;
+_;
+locked = false;
+
+
+CONSTRUCTOR
+
+- access to special variables
+
+msg.sender, block.timestamp
+
+
+multiple inheritance "most baselike to most derived"
+
+event and emit
+
+event MSG(string _msg);
+emit MSG ("rock on!") 
+
+VISIBILITY
+
+private, internal, public, external (vars and fn)
+
+private - only in contract.
+
+internal - accessible in child contracts, not accounts.
+
+public - accessible to contract and accounts
+
+external - fn can only be called by outside accounts and contracts
+
+external state variable does not exist
+
+All contracts are visible. just SCOPE, not literally visible. half
+
+EVENTS - notified when event emitted.
+
+publisher - subscriber, write, fire, 
+
+LOG is a good EVENT name. That is basically what it was...
+
+EVENTS are VISIBLE in LOG. And stored on BLOCKCHAIN-.
+
+Search all LOG EVENTS - where sender is address
+
+indexed - on parameter, where value. All events by sender address.
+
+ABI - communicate on blockchain with contracts, get all the events fired by contract.
+
+INFURA - quickly access blockchain, without downloading node.
+
+-- WEB 3 LOAD CONTRACT (with INFURA)
+
+const Contract = new web3.eth.Contract(abi,address)
+
+Contract.getPastEvents("Transfer",...); // in last 100 blocks
+
+WEB 3 SUBSCRIBE TO CONTRACT EVENTS???
+
+Contract.events.Transfer(...)
+
+When "Transfer is emitted - Web3 function is called"
+
+INDEX PARAMETERS for FAST look up.
+GET PAST PARAMETERS.
+SUBSCRIBE to EVENTS to get FUTURE EVENTS.
+
+
+- ASSERT, REQUIRE, REVERT - ways to THROW ERROR
+Errors bubble up.
+
+ASSERT - should never happen, only on serious Errors, always evaluate to true.
+Transaction will FAIL.
+
+If ASSERTION FAILS CONTRACT, GAS is LOST.
+
+OVERFLOW and UNDERFLOW uint like a CLOCK 0 2^256-1 - will wrap around
+
+overflow - uint wraps around. when we add really big numbers
+
+OVERFLOW VALIDATION:
+
+MAX_UINT = 2 ** 256 - 1
+
+balance + amount does not overflow if balance + amount >= balance
+
+balance - amount does not underflow if balance - amount <= balance
+
+REQUIRE - validate inputs before execution and outputs of functions.
+
+REQUIRE before account change and ASSERT never fails.
+
+         - DOES NOT USE UP ALL OF THE GAS? BUT ASSERT does.
+
+REVERT - if statements for invalid condition, same as REQUIRE.
+Best when CONDITION needs to be in a COMPLEX IF outside, not INSIDE check like REQUIRE.
+
+FOR LOOP GAS - loops need UPPER BOUNDS to not use all GAS.
+
+More GAS for LONGER LOOPS.
+
+ARRAYS DYNAMICALLY SIZED or FIXED SIZE "at compile time"
+
+DYNAMIC: uint[]
+FIXED: uint[10]
+
+remove element at index
+delete MyArray[4]  - sets value to default 0
+does not change length
+remove - last element and copy over node removed (saves gas)
+
+MAPPING - means JS OBJECT.
+
+PAYABLE for FUNCTION or PARAMETER. and INTEGRITY CHECKING.
+
+- MERKLE Tree , MERKLE Proof, MERKLE Hash. ROOT HASH.
+
+ROOTHASH is a unique description of a DATASET.
+
+USE: determine if a TRANSACTION is in a BLOCK. Quickly and cheaply.
+    do not need to download all block and search through them.
+    Hash gives INDEX to the LEAF.
+    MUST BE POWER OF 2. ODD / EVEN to compute  location HASH.
+    ROOT HASH - is the base of combined hashes into ONE BLOCK.
+    MUST have LENGTH of POWER of 2 like 8,16,32,64,122,244.
+    Else must duplicate last elements to finish ROOT HASH.
+
+CRYPTOGRAPHIC PROOF of a TRANSACTION in a BLOCK
+Better than CONCANTENATION - because it requires all the data to compare. Merkel only needs a few nodes. (10 hashes)
+
+SMALL PROOF that data is in block, like transaction.
+
+RIGHT LEAF is always EVEN. LEFT LEAF is always odd INDEX.
+
+PARENT INDEX is always /2 half rounded down. So PARENT of three and 2 is 1
+
+PROOF ELEMENT is on the LEFT SIDE so 3 is 2 and 1 is 0.
+
+MERKEL ITERATION: VERIFY PROOF.
+Index from prior iteration. ODD OR EVEN.
+EVEN, PROOF ELEMENT (same level) on the RIGHT 
+Append it to current hash, Update hash.
+Index divide by 2 and round down. Until ROOT.
+Compare ROOT with HASH, equal if TRANSACTION in BLOCK.
+
+Hashing Paired Data, and Hashing into BIG ARRAY.
+CRYPTOGRAPHICALLY prove without revealing all TRANSACTIONS.
+
+HASH FUNCTION - keccak - "no two inputs, ever generate same output"
+
+This is for "CONTENT ADDRESSING" Unique Identifier for CONTENT.
+
+Same address across platforms...
+
+Add in PEER TO PEER NETWORK. But need TRUST. 
+
+Need to VERIFY, we get what we want - not a hack.
+
+Fast Data Verification across network of PEERS.
+
+MERKEL TREE - store HASHES not DATA.
+
+"BINARY TREE"
+
+LEAF is a HASH OF DATA, and PARENTS are the HASH of the LEAFS.
+
+
+Address Content with Unique Hash and VERIFY
+
+DISTRIBUTE RESPONSIBILITY OF HOSTING TO UNTRUSTED PEERS BY Merkle Verification
+
+Only need a few PARENT HASHES to confirm authenticity on open network.
+
+Web to be build on small contributions of many, rather than concentrated resources of a few.
+
+
+- ENUM is good for TRACKING STATE. Dynamic Data type.
+
+contract Order {
+    enum Status {
+        Pending, Shipped, Accepted, Rejected, Canceled
+    }
+    Status public status;
+}
+
+require(status == Status.Pending);
+status = Status.shipped;
+
+STATE TRANSMISSION with ENUM
+
+- STRUCTs
+
+struct Todo {
+    string text;
+    bool completed;
+}
+//CUSTOM DATA-TYPE from STRUCT.
+Todo[] public todos;
+
+function create(string memory _text) public{
+    //3 ways to initialize struct//1 function
+    todos.push(Todo(_text, false)); //params, align.
+    //2 value -mapping
+    Todo({text:_text,completed:false});
+    //3 declare (is best)
+    Todo memory todo;
+    todo.text = _text;
+
+}
+
+Solidity AUTOMATICALLY created GETTERS on STRUCTs
+function get(uint _index) public view returns (string memeory bool){
+    Todo storage todo = todos[_index];
+    return (todo.text, todo.complted);
+}
+
+TODOS: Array of Structs at an INDEX.
+
+RETURN NAMES of VARIABLES
+
+return (bool memory NAME) //returns as a MAP.
+
+Helpful for OTHER CONTRACTS.
+
+- PAYABLE
+
+deposit, withsraw, Transfer EVENTS 
+
+Payable functions and constructors can RECEIVE.
+Payable address can SEND eth
+
+-SEND ETHER
+
+3 ways: TRANSFER, SEND, CALL (call recommended)
+- forwards 2300 gas. special function fallbackfn is given 2300gas
+- run out of gas, more eth than contract, send non payable 
+ERROR and FAIL. Have to check to see result.
+
+CALL - forwards ALL GAS, returns bool. Protects REENTRANCY.
+
+
+Transfer ( )
+
+contract ReceiveETH{
+    funciton () external payable {} //Fallback Fn.
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+}
+
+contract SendETH{
+    //3 ways to send ETHER
+    function sendViaTransfer(address payable _to) public payable {
+        _to.transfer(msg.value); //no return value
+    }
+
+    funciton sendViaSend(address payable _to) public payable {
+        bool sent _to.send(msg.value);
+        require(sent, "fail"); //returns bool from sent.
+    }
+
+    function sendViaCAll(address payable _to) public payable {
+        (bool sent, bytes memory data) = //multiple returns
+           _to.call.value(msg.value)("");
+           require(sent,"Failed to send Ether");  
+    }
+
+
+}
+
+FALLBACK FUNCTION - no name no code no imputs no outputs external.
+1 call fn that does not exist
+2 send eth by send, transfer, call.
+
+receive eth make it payable
+
+function() external payable {}
+
+sent 2300 gas to fallback fn.
+function () external payable {
+   emit Log(gasleft());
+}
+
+When called by CALL - sends all GAS 
+When called by SEND or TRANSFER - sends 2300 GAS.
+
+DO NOT PUT CODE IN FALLBACK FN. 
+
+- CALL - low level method.
+
+not recommended, except for transfering eth.
+used for functions that are not defined.
+
+specify gas to send to fallback fn
+_addr.call.value(msg.value).gas(5000)("");
+
+- DELEGATE CALL used to call other contracts
+contract b is run in contract a context.
+
+uses STORAGE and SENDER of CONTRACT A, not B.
+Switches to PARENT SCOPE, not child scope.
+
+"UPGRADABLE CONTRACTS" - cannot change code.
+B is the upgrade.
+B2 passed to contract A  
+
+_contractB.delegatecall("somfn")
+
+somefn will update Contract A as ... override scope.
+
+LAYOUT OF STATE VARIABLES - have to be same.
+
+- LIBRARY 
+
+library can save gas 
+
+becasue deployed once, and 
+
+linked  at compile time. with 
+
+using keyword, and what it is for
+
+using SafeMath for uint;
+
+//attach fns from LIB to TYPE.
+// init type... contains new fns.
+
+LIBRARY FUNCTIONS internal
+
+adds library functions to TYPES.
+
+EMBEDDED. Or LINKED. (not available in REMIX)
+
+- CRYPTO HASH
+keccak256.
+
+- arbitrary input, fixed size output.
+- deterministic - always the same output for same imputs
+- unique collision resistant
+
+bytes as input - abi.encodePacked() // convert to BINARY
+turns in all inputs to bytes, then to 32 byte hash
+
+abi.encodePacked // collision between AAA,BBB and AA,ABBB
+use to solve
+abi.encode()
+
+- SIGNATURE VERIFICATION
+
+//SIGNING
+1. create message
+2. has the message
+3. sign the HASH (off chain, keep private key secret)
+
+//VERIFY 
+1. Recreate hash from message
+2. Recover signer from signature and hash
+3. Compare recovered signer to claim
+
+contract VerifySignature{
+    function getMessageHash()
+}
+
+SIGNATURE in keccak256
+"\x19Ethereum Signed Message\n"+len(msg) + msg;
+
+
+- REENTRANCY vulnerability
+
+uses 
+
+fallback() external payable {
+    target.withdraw(1 ether);
+}
+
+TWO SOLUTIONS:
+1. move decrement ABOVE TRANSACTION
+balances[msg.sender] -= _amount;
+2. MODIFIER to LOCK the WITHDRAW fn.
+noReEntry
+
+bool internal locked;
+modifier noReEntry(){
+    require(!locked,"No Re-Entry");
+    locked = true;
+    _;
+    locked = false;
+}
+
+- OVERFLOW and UNDERFLOW vulnerability
+number too big. for maximum range.
+or smaller than minimum range.
+
+uint = uint256 //2**256-1
+NO ERRORS!
+
+SAFEMATH library from OpenZepplin
+
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/
+using SafeMath for uint;
+
+extra SAFE functions to uint
+LIKE 
+
+myUint.add(123);
+.add() will THROW ERROR. BOTH overflow and underflow
+
+-FORCE ETHER SELF DESTRUCT
+selfdestruct(addr); //delete from blockchain
+
+exploit works because of 
+address(this).balance
+which can be changed by forcing in ETH.
+
+SOLUTION
+make a balance state variable.
+balance += msg.value;
+
+and
+require(msg.value == 1 ether, "Must be 1");
+
+NEVER STORE SENSITIVE DATA on BLOCKCHAIN.
+
+EVM stores STATE VARIABLES in "SLOTS" each 32 bytes.
+"compute the slot" to read private state variables.
+
+GET SLOT 1 - on TRUFFLE COMMAND LINE. - GETSLOT
+web3.eth.getStorageAt(addr,1,console.log);
+
+read PWD
+web.utils.toAscii()
+
+-DELEGATE CALL can be dangerous
+Run Child code in Parent Contract CONTEXT
+
+FALLBACK is called on child, when a fn that does not exist it called.
+
+-RANDOMNESS VULNERABILITY
+
+"Secure Random Number in Solidity is extreemely difficult"
+
+block.timestamp
+blockhash - previous block hash, since current block is in transaction.
+
+RANDOMNESS:
+uint(keccak256(abi.encodePacked(blockhash(block.number - 1),block.timestamp)))
+
+SOLUTION: these are guessable by outside contract.
+Same timestamp and blockhash - because executed on the same block on the chain
+
+- DENIAL of SERVICE reject/accept
+missing fallback function
+cannot receive either
+fail transfer, transaction
+SOLUTION - PUSH vs PULL of ETHER.
+Allow withdrawl, is safer than PUSH.
+in smart contract design
+
+tx.origin may incite PHISHING
+
+- HIDE CODE FROM ETHERSCAN
+
+contract using unverified address.
+make a second contract address private state variable
+NEVER TRUST an EXTERNAL address.
+
+- HONEYPOT
+  look like reentrancy, but hide code to catch it. 
+
+  revert - forcefully fail fn.
+
+SOLIDITY STRING COMPARISON - need to compare hashes of strings not strings!?!
+
+function equal(string memory a, string memory _b) public pure returns (bool){
+    return keeccak256(abi.encode(a)) == keccak256(abi.encode(_b));
+}
+
+-FRONTRUNNING
+
+Look into Pending Transaction, get answer,
+pay higher gas to get into block faster.
+
+
+- BLOCKTIMESTAMP
+
+do not use! unless you use 15 second rule.
+
+unless time variability is within 15 seconds.
+because block timestamp is locked within 15 seconds.
+
+- SIGNATURE REPLAY ATTACK.
+
+use same signature to execute transaction multiple times.
+
+same signature to fn multiple times.
+
+include nonce in transaction 
+
+include address(this) in TxHash
+to uniquely identify transactions.
+
+- ZERO SIZE  contract
+transaction in same block has 0 size.
+so a check on contract size is not accurate.
+
+//***************************************************************
+// OPEN SEA TUTORIALS: https://docs.opensea.io/docs/getting-started
+//*****************************************************************
+
+- ERC20 - identical tokens (bitcoin)
+- ERC721 - all unique tokens (nfts) https://eips.ethereum.org/EIPS/eip-721
+
+npm install @openzeppelin/contracts
+
+
+PROFESSIONAL MENTOR GUIDE and TEACHER for all things CRYPTO.
+
+https://docs.openzeppelin.com/learn/
+
+Truffle and Hardhat can be installed globally we recommend 
+installing locally in each project so that you can control 
+the version on a project by project basis.
+
+
+*************************************************
+1. $ mkdir learn && cd learn
+2. $ npm init -y
+--
+3. $ npx create-react-app my-app
+4. $ cd && yarn start
+yarn start
+yarn build
+yarn test 
+yarn eject
+5. git init
+6. helmet OR truffle
+
+
+.gitignore files with secrets.
+
+***********************************************
+
+https://ethereum.org/en/learn/
+
+a. CREATE PROJECT
+b. INSTALL TOOLS
+c. COMPILE
+d. TEST
+- Truffle uses web3.js 
+- Hardhat uses ether.js
+how to develop, test and deploy smart contracts using Truffle and Hardhat
+
+6. TRUFFLE INSTRUCTS
+$ npm install --save-dev truffle
+$ npx truffle init
+
+Try our scaffold commands to get started:
+  $ truffle create contract YourContractName # scaffold a contract
+  $ truffle create test YourTestName         # scaffold a test
+http://trufflesuite.com/docs
+
+7. cd contracts
+
+EVM reads compiled SOL BYTECODE.
+config Truffle to use best solc version.
+... in truffle-config.js
+
+// const HDWalletProvider = require('@truffle/hdwallet-provider');
+// const fs = require('fs');
+// const mnemonic = fs.readFileSync(".secret").toString().trim();
+
+COMPILE 
+$ npx truffle compile  //auto compiles all in /contracts per truffle-config.js
+or
+VSCODE right-click, F5
+
+build/contracts //bytecode and metadata
+
+8. add build/contracts to .gitignore
+
+use import to instance MODULES/INHERITANCE/ENCAPSULATION
+
+ OpenZeppelin Contracts contains lots of useful building blocks for smart contracts to build on.
+https://docs.openzeppelin.com/contracts/4.x/
+
+ADD FEATURES with MULTIPLE INHERITANCE & POLYMORPHISM
+
+-JavaScript API web3.js. web3.eth.Contract creation.
+-constructor executed, final contract stored on blockchain
+- deployed code does not include the constructor code
+
+9. npm install --save-dev @openzeppelin/contracts
+
+-smart contracts live on ethereum network
+
+HARDHAT INSTRUCTS **********************************
+
+6. HARDHAT install and config
+
+$ npm install --save-dev hardhat
+$ npx hardhat. //empty This will create a Hardhat config
+
+contracts/example1.sol
+
+7 COMPILE
+
+$ npx hardhat compile  //auto compile all in contracts.
+
+creates artifacts of bytecode and metadata 
+
+.gitignore artifacts
+
+hardhat.config needs to match the contract pragma!
+module.exports = {
+  solidity: "0.8.0",
+};
+
+8 IMPORT CONTRACTS
+
+$ npm install --save-dev @openzeppelin/contracts
+
+
+//********************************************
+Setting up Local blockchain
+
+Mainnet - real money to use.
+TESTNETS: Ropsten, Rinkeby, Kovan, Goerli
+
+LOCAL BLOCKCHAIN great for automated tests.
+
+#Truffle or Hardhat
+
+MOST POPULAR IS GANACHE-cli
+
+9 LOCAL BLOCKCHAIN
+$ npm install --save-dev ganache-cli
+exact same (random) addresses in ganache
+$ npx ganache-cli --deterministic
+random accounts, ether, and private keys.
+127.0.0.1:8545
+
+Truffle uses MIGRATIONS to DEPLOY. 
+//JS files track onchain "migrations".
+
+DEFINE "DEPLOY" in "MIGRATIONS".
+// migrations/2_deploy.js
+const Box = artifacts.require('Box');
+module.exports = async function (deployer) {
+  await deployer.deploy(Box);
+};
+
+10 CONFIG network
+    //truffle-config.js
+    development: {
+     host: "127.0.0.1",     // Localhost (default: none)
+     port: 8545,            // Standard Ethereum port (default: none)
+     network_id: "*",       // Any network (default: none)
+    },
+$ npm install --save-dev ganache-cli
+
+11 MIGRATE command
+
+$ npx truffle migrate --network development
+
+//DEPLOYs CONTRACTS to BLOCKCHAIN (ganache)
+
+CONTRACT ADDRESS is important when 
+interacting programmatically
+also account address is available.
+
+IF you close GANACHE - redeploy contracts.
+
+12 INTERACTIONS - TRUFFLE console
+
+//START "TRUFFLE CONSOLE"
+$ npx truffle console --network development
+
+//TRUFFLE CONSOLE
+truffle(development)> const box = await Box.deployed();
+
+//what does this do? 
+ANSWER: after DEPLOY, get BOX INSTANCE???
+within 
+truffle(development)> ... CONSOLE.
+then use the box instance to interact with blockchain???
+cool!
+
+13 TRANSACTIONS to CONTRACTS set STATE, stored in BLOCKCHAIN.
+
+Send TRANSACTION to BOX to execute STORE and change 
+BLOCKCHAIN STATE.
+
+// CALL CONTRACT on CONSOLE.
+truffle(development)> await box.store(42)
+
+14 RECEIPT from TRANSACTIONS
+
+   TRANSACTION RECEIPT shos the EVENTS!
+
+15 QUERY NEED NOT TRANSACTION, because READ ONLY.
+
+- READ ONLY is FREE in ETHEREUM!!! (any network)
+
+- READ ONLY - no transaction hash to report.
+No receipt.
+
+truffle(development)> await box.retrieve()
+
+This is perfect for publishing a book.
+
+CHAPTER~ADVOCATES
+CHAPTER~BENEFACTORS
+
+INFO - BIG NUMBER uint256 returned from CONTRACT.
+(await box.retrieve()).toString().
+
+truffle(development)> (await box.retrieve()).toString()
+'42'
+
+TRUFFLE DEVELOP && CONSOLE: 
+https://www.trufflesuite.com/docs/truffle/getting-started/using-truffle-develop-and-the-console
+
+ONCE CONTRACT is DEPLOY on Ganache 
+- Hardhat can connect / interact too.
+
+//******************-scripts/index.js-**************
+// scripts/index.js
+module.exports = async function main (callback) {
+  try {
+    // Our code will go here
+
+    callback(0);
+  } catch (error) {
+    console.error(error);
+    callback(1);
+  }
+};
+
+//CODE FOR CONTRACT IO from scripts/main.js.
+
+16) EXECUTE JS SCRIPT:
+$ npx truffle exec --network development ./scripts/index.js
+
+//CALL for CONTRACT IO-.
+// Set up a Truffle contract, representing our deployed Box instance
+const Box = artifacts.require('Box');
+const box = await Box.deployed();
+
+const value = await box.retrieve();
+console.log('Box value is', value.toString());
+
+await box.store(23);
+
+// Call the retrieve() function of the deployed Box contract
+const value = await box.retrieve();
+console.log('Box value is', value.toString());
+
+*************HARDHAT****************
+$ npx harhat node
+local blockchain
+
+uses ETHERSCAN
+
+$ npm install --save-dev @nomiclabs/hardhat-ethers ethers
+
+// hardhat.config.js
+require('@nomiclabs/hardhat-ethers');
+
+DEPLOY
+$ npx hardhat run --network localhost scripts/deploy.js
+
+CONSOLE - hardhat console like truffle console.
+
+$ npx hardhat console --network localhost
+> const Box = await ethers.getContractFactory('Box');
+> const box = await Box.attach('0x5FbDB2315678afecb367f032d93F642f64180aa3')
+
+HARDHAT - SCRIPTING
+$ npx hardhat run --network localhost ./scripts/index.js
+
+//INTERACT
+// Set up an ethers contract, representing our deployed Box instance
+const address = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const Box = await ethers.getContractFactory('Box');
+const box = await Box.attach(address);
+
+
+***********************************************
+** WRITING AUTOMATED tests
+**********************************************
+Single sentence assertions
+
+LOCAL BLOCKCHAIN - for TESTNET.
+1) $ npm install --save-dev chai
+
+TESTS in /test - mirrors /contracts
+
+for EACH .sol, create a test file.
+
+2) npx truffle test
+
+ Continuous Integration CircleCI tests run commit to GitHub.
+https://circleci.com/
+
+ 3) COMPLEX assertions
+
+- verify contract reverts on errors
+- measure how much an account’s Ether balance changed
+- check events are emitted
+- simulate passage of time
+- very large numbers
+
+npm install --save-dev @openzeppelin/test-helpers
+
+// Import utilities from Test Helpers
+const { BN, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
+
+ 4) OPEN ZEPPELIN TEST-ENVIRONMENT
+
+ web3.js based test environment
+https://docs.openzeppelin.com/test-environment/0.1/
+
+$ npm install --save-dev @openzeppelin/test-environment
+
+
+
+/****************************************************
+** WEB3 - TEST TEMPLATE!!!
+require('@openzeppelin/test-environment')
+in test file, a local ganache-powered blockchain 
+with accounts will be spun up, 
+and all tools configured to work with it.
+\****************************************************/
+const { accounts, contract } = require('@openzeppelin/test-environment');
+const [ owner ] = accounts;
+
+const { expect } = require('chai');
+
+const MyContract = contract.fromArtifact('MyContract'); // Loads a compiled contract
+
+describe('MyContract', function () {
+  it('deployer is owner', async function () {
+    const myContract = await MyContract.new({ from: owner });
+    expect(await myContract.owner()).to.equal(owner);
+  });
+});
+
+AWESOME CONFIG:
+test-environment.config.js 
+https://docs.openzeppelin.com/test-environment/0.1/getting-started#configuration
+
+
+TESTRUNNER - MOCHA:
+package.json:
+
+ "scripts": {
++  "test": "mocha --exit --recursive"
+or 
+    "test": truffle compile && mocha --exit --recursive
+ }
+
+/***********************PUBLIC TESTNET***************\
+** after CONTRACT FULLY TESTED - go public
+** beta users - interact, transactions. TESTNETS (no cost)
+\*****************************************************/
+
+- 4 TESTNETS:
+- Ropsten - only POW. Closest to MAINNET. id=3
+- Rinkeby - POA (proof of authority) "trusted nodes" not miner POW..
+    - only Geth Clients. id=4.
+- Kovan - POA only OpenEthereum clients. id=42
+- Goerli - POA Geth and OpenEthereum clients. id=5
+- local - id = large random number.
+- main Ethereum network id=1
+
+Ropsten (unpredictable) for ROBUSTNESS TESTS.
+Others simplify TESTING workflow.
+
+HOW TO CONNECT (to public test net)
+1) Get a testnet node
+2) create a new account
+3) update config file
+4) fund testing account
+
+Can spin up LOCAL GETH or OpenEthereum
+or
+easy way to testnet is via 
+a public node service such as Alchemy or Infura. 
+
+
+TESTNET NODE on Alchemy. "test node" to "public node"
+GET ALCHEMY assigned API key - for secrets.json
+"alchemyApiKey": "JPV2..."
+
+
+
+1) NEW account
+
+$ npx mnemonics
+
+3) CONFIG NETWORK
+- public NODES need SIGNED locally
+- config mnemonic and Alchemy endpoint.
+
+HDWALLET-provider
+$ npm install --save-dev @truffle/hdwallet-provider
+use to sign transactions for addresses derived from a 12 or 24 word mnemonic.
+gets privateKeys
+
+******ENV********
+npm install dotenv
+require('dotenv').config()
+I prefer the example below.
+
+
+// truffle-config.js
++const { alchemyApiKey, mnemonic } = require('./secrets.json');
++const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+ module.exports = {
+   ...
+   networks: {
+     development: {
+      ...
+     },
++    rinkeby: {
++      provider: () => new HDWalletProvider(
++        mnemonic, `https://eth-rinkeby.alchemyapi.io/v2/${alchemyApiKey}`,
++      ),
++      network_id: 4,
++      gasPrice: 10e9,
++      skipDryRun: true,
++    },
+   },
+   ...
+ };
+
+ 4) gitignore SECRETS file
+ require('./secrets.json');
+
+ use dotenv (standard) for secrets
+https://github.com/motdotla/dotenv
+npm install dotenv
+require('dotenv').config()
+
+
+5) CONNNECT - truffle to rinkeby
+$ npx truffle console --network rinkeby
+truffle(rinkeby)> accounts
+[ '0xEce6999C6c5BDA71d673090144b6d3bCD21d13d4',
+  '0xC1310ade58A75E6d4fCb8238f9559188Ea3808f9',
+... ]
+
+MATIC
+$ npx truffle console --network matic
+truffle(matic)> accounts
+
+from truffle-config
+    matic: {
+      provider: () => new HDWalletProvider(
+        mnemonic, `https://polygon-mumbai.g.alchemy.com/v2/${alchemyApiKey}`,
+      ),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      gasPrice: 10e9,
+      skipDryRun: true,
+      gas: 6000000,
+    },
+
+- getBalance
+> (await ethers.provider.getBalance(accounts[0])).toString()
+'0'
+var ethers = require('ethers');
+OR
+
+
+
+6) Faucet FUND the testnet account
+- test ether for free.
+- go to Rinkeby Authenticated Faucet (twitter)
+
+OR MetaMask faucet - direct!
+https://faucet.metamask.io/
+
+7) DEPLOY CONTRACTS to TESTNET!
+
+$ npx truffle migrate --network rinkeby
+
+- contract instance will be forever stored in the testnet, 
+and publicly accessible to anyone.
+https://rinkeby.etherscan.io/
+
+INTERACT with TEST-CONTRACT - via console or script.
+$ npx truffle console --network rinkeby
+truffle(rinkeby)> box = await Box.deployed()
+undefined
+truffle(rinkeby)> await box.store(42)
+{ tx:
+   '0x7d1a556b34fcb26855c6646669fc926738b05589591de6c7bb1f8773546817e7',
+...
+truffle(rinkeby)> (await box.retrieve()).toString()
+'42'
+
+EVERY PUBLIC TEST-NET COSTS (fake) GAS!
+
+
+/*****************************************************************
+** ALCHEMY - PUBLIC NODE HOST PROVIDER for ETH DEV.
+\****************************************************************
+- provides dApp NODE HOSTING
+- REPLACE self-hosted nodes, not great.
+- Supernode API and suit of dev tools.
+- BUILD, MONITOR, SUPPORT, NOTIFY: Supernode
+
+
+/**************************************************
+** CONTRACT UPDATES (upgrades) PROXY 
+\*************************************************
+OZ PLUGIN for TRUFFLE for "upgradeable"
+https://docs.openzeppelin.com/upgrades-plugins/1.x/
+https://docs.openzeppelin.com/openzeppelin/upgrades
+
+
+- iteratively add new FEATURES
+- preserve address, state, balance.
+- fix bugs
+OpenZeppelin "Upgrades Plugins"
+
+ETH SmartContracts are "immutable"
+"unbreakable contract"
+
+use DEPLOYPROXY for upgrades later
+In addition to Box is ProxyAdmin.
+
+$ npm install --save-dev @openzeppelin/truffle-upgrades
+
+DEPLOY as UPGRADABLE CONTRACT
+// migrations/3_deploy_upgradeable_box.js
+const { deployProxy } = require('@openzeppelin/truffle-upgrades');
+
+const Box = artifacts.require('Box');
+
+module.exports = async function (deployer) {
+  await deployProxy(Box, [42], { deployer, initializer: 'store' });
+};
+
+$ npx truffle migrate --network development
+
+https://docs.openzeppelin.com/learn/upgrading-smart-contracts
+
+Pause Ability is important for UPGRADE.
+
+"Defender Admin" from OZ.
+
+- TEST PROXY
+it('works before and after upgrading', async function () {
+  const instance = await upgrades.deployProxy(Box, [42]);
+  assert.strictEqual(await instance.retrieve(), 42);
+
+  await upgrades.upgradeProxy(instance.address, BoxV2);
+  assert.strictEqual(await instance.retrieve(), 42);
+});
+
+- deployProxy()
+- upgradeProxy()
+
+DELEGATES calls to delagate not CALLEE.
+that separates call from implementation.
+Proxy is the Delegate.
+decouple state and code.
+On DEPLOY, a new implementation address 
+is set in the PROXY.
+Multiple Proxies can use the same implementation contract.
+All users interact with PROXY. https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies
+PROXY never changes address.
+
+- INITIALIZABLE (singleton, run only once)
+Upgrades cannot have constructors, initializers instead.
+
+/**************************************************
+** PLANNING for MAINNET
+\**************************************************
+-Auditing and Security
+-Verifying code
+-Managing keys
+-Project Governance
+
+Anyone can send transaction with any payload
+All code and state is public viewable
+VERIFY on ETHERSCAN - allows confirmation that assembly is 
+viewable on block explorer at address
+
+/****************
+** upgradeable
+\****************
+
